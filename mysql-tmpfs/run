@@ -1,0 +1,20 @@
+#!/bin/bash
+set -e
+
+MYSQL_SIZE=${MYSQL_SIZE:-"1024"}
+
+echo "Starting MySQL using ${MYSQL_SIZE}MB tmpfs..."
+mkdir -p /var/lib/mysql
+mount -t tmpfs -o size="${MYSQL_SIZE}m" tmpfs /var/lib/mysql
+
+chown -R mysql:mysql /var/lib/mysql
+mysql_install_db --user mysql > /dev/null
+
+/usr/sbin/mysqld --bootstrap --verbose=0 << EOF
+USE mysql;
+FLUSH PRIVILEGES;
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION;
+UPDATE user SET password=PASSWORD("") WHERE user='root';
+EOF
+
+exec /usr/sbin/mysqld
