@@ -1,0 +1,10 @@
+[Unit]
+Description=MySQL Server
+
+[Service]
+ExecStartPre=@ /usr/bin/docker rm -f %p.%i
+ExecStart= /usr/bin/docker run --name %p.%i -p %i:3306 --privileged --rm mdaubs/mysql-tmpfs:5.5
+ExecStop=@ /usr/bin/docker rm -f %p.%i
+
+[Install]
+WantedBy=default.target
