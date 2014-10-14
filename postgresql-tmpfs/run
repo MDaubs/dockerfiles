@@ -1,0 +1,13 @@
+#!/bin/bash
+set -e
+
+POSTGRESQL_SIZE=${POSTGRESQL_SIZE:-"1024"}
+
+echo "Starting PostgreSQL using ${POSTGRESQL_SIZE}MB tmpfs..."
+mkdir -p /var/lib/postgresql
+mount -t tmpfs -o size="${POSTGRESQL_SIZE}m" tmpfs /var/lib/postgresql
+chown -R postgres:postgres /var/lib/postgresql
+chown 0700 /var/lib/postgresql
+
+su -c "/usr/lib/postgresql/9.3/bin/initdb -D /var/lib/postgresql/9.3/main" postgres
+su -c "/usr/lib/postgresql/9.3/bin/postgres --config-file=/etc/postgresql/9.3/main/postgresql.conf" postgres
