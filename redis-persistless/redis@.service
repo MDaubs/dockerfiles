@@ -1,0 +1,10 @@
+[Unit]
+Descrption=Redis Server
+
+[Service]
+ExecStartPre=@ /usr/bin/docker rm -f %p.%i
+ExecStart= /usr/bin/docker run --name %p.%i -p %i:6379 --privileged --rm mdaubs/redis-persistless
+ExecStop=@ /usr/bin/docker rm -f %p.%i
+
+[Install]
+WantedBy=default.target
